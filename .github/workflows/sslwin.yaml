@@ -14,7 +14,7 @@ jobs:
       - name: Output OpenSSL path
         id: osslout
         shell: cmd
-        run: echo sslp="%programfiles%\OpenSSL">>"%GITHUB_OUTPUT%"
+        run: echo sslp="C:\openssl\">>"%GITHUB_OUTPUT%"
       - name: Install Deps
         shell: cmd
         run: |
