@@ -1,6 +1,6 @@
 name: Build OpenSSL for Windows
 on:
-  workflow-dispatch:
+  workflow_dispatch:
     inputs:
       sslref:
         description: "OpenSSL version to build (Branch name)"
