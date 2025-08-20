@@ -35,11 +35,15 @@ jobs:
               nmake test
               nmake install
       # 7z a -tzip -mx9 -o"%userprofile%" "openssl-amd64.zip" "%programfiles%\OpenSSL\"
+      - name: Output OpenSSL path
+        id: osslout
+        shell: cmd
+        run: echo "sslp=%programfiles%\OpenSSL">%GITHUB_OUTPUT%
       - name: Upload OpenSSL
         uses: actions/upload-artifact@v4
         with:
           name: opensslforwin
-          path: ${{ env.PROGRAMFILES }}\OpenSSL\
+          path: ${{ steps.osslout.sslp }}
           compression-level: 9
           include-hidden-files: true
           
