@@ -1,10 +1,36 @@
 name: Build OpenSSL for Windows
-on: workflow-dispatch
+on:
+  workflow-dispatch:
+    inputs:
+      sslref:
+        description: "OpenSSL version to build (Branch name)"
+        required: true
+        default: 'openssl-3.5'
 
 jobs:
   build:
     runs-on: windows-latest
     steps:
       - name: Install Deps
-        run: echo "Hello World"
+        shell: cmd
+        run: |
+              set PATH=%PATH%;%programfiles%\7-Zip\
+              curl -o "nasm.zip" "https://www.nasm.us/pub/nasm/releasebuilds/2.16.03/win64/nasm-2.16.03-win64.zip"
+              7z e -tzip -o"%programfiles%\nasm" "nasm.zip"
+      - name: Clone OpenSSL
+        uses: actions/checkout@v5
+        with:
+          repository: openssl/openssl
+          ref: ${{ inputs.sslref }}
+      - name: Configure MSVC CMD for amd64
+        uses: ilammy/msvc-dev-cmd@v1.13.0
+        with:
+          arch: amd64
+      - name: Build OpenSSL
+        shell: cmd
+        run: |
+              set PATH=%PATH%;%programfiles%\nasm
+              perl Configure VC-WIN64A
+              dir /S
+              
     
