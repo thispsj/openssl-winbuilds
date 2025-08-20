@@ -14,7 +14,7 @@ jobs:
       - name: Output OpenSSL path
         id: osslout
         shell: cmd
-        run: echo sslp=%programfiles%\OpenSSL>%GITHUB_OUTPUT%
+        run: echo sslp="%programfiles%\OpenSSL">>"%GITHUB_OUTPUT%"
       - name: Install Deps
         shell: cmd
         run: |
@@ -43,7 +43,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: opensslforwin
-          path: ${{ steps.osslout.sslp }}
+          path: ${{ steps.osslout.outputs.sslp }}
           compression-level: 9
           include-hidden-files: true
           
