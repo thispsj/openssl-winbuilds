@@ -29,8 +29,19 @@ jobs:
       - name: Build OpenSSL
         shell: cmd
         run: |
-              set PATH=%PATH%;%programfiles%\nasm
+              set PATH=%PATH%;%programfiles%\7-Zip\;%programfiles%\nasm
               perl Configure VC-WIN64A
-              dir /S
+              nmake
+              nmake test
+              nmake install
+      # 7z a -tzip -mx9 -o"%userprofile%" "openssl-amd64.zip" "%programfiles%\OpenSSL\"
+      - name: Upload OpenSSL
+        uses: actions/upload-artifact@v4
+        with:
+          name: opensslforwin
+          path: ${{ env.PROGRAMFILES }}\OpenSSL\
+          compression-level: 9
+          include-hidden-files: true
+          
               
     
