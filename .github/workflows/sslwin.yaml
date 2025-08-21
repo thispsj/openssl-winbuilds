@@ -2,10 +2,18 @@ name: Build OpenSSL for Windows
 on:
   workflow_dispatch:
     inputs:
-      sslref:
-        description: "OpenSSL version to build (Branch name)"
+      sslrel:
+        description: "OpenSSL version to build (Tarball Link)"
         required: true
-        default: 'openssl-3.5'
+        default: 'https://github.com/openssl/openssl/releases/download/openssl-3.5.2/openssl-3.5.2.tar.gz'
+      nasmurl:
+        description: "NASM zip link"
+        required: true
+        default: 'https://nasm.us/pub/nasm/releasebuilds/2.16.03/win64/nasm-2.16.03-win64.zip'
+      osslver:
+        description: "OpenSSL Version (Should be the same as the one specified in link else build will fail!)"
+        required: true
+        default: '3.5.2'
 
 jobs:
   build:
@@ -20,13 +28,11 @@ jobs:
         run: |
               md "%userprofile%\OpenSSL"
               set PATH=%PATH%;%programfiles%\7-Zip\
-              curl -o "nasm.zip" "https://www.nasm.us/pub/nasm/releasebuilds/2.16.03/win64/nasm-2.16.03-win64.zip"
+              curl -s -o "nasm.zip" "${{ inputs.nasmurl }}"
               7z e -tzip -o"%programfiles%\nasm" "nasm.zip"
-      - name: Clone OpenSSL
-        uses: actions/checkout@v5
-        with:
-          repository: openssl/openssl
-          ref: ${{ inputs.sslref }}
+              curl -s -o "openssl.tar.gz" "${{ inputs.sslrel }}"
+              7z x -so "openssl.tar.gz" | 7z x -ttar -si -o"%userprofile%"
+              cd "%userprofile%\openssl-${{ inputs.osslver }}"
       - name: Configure MSVC CMD for amd64
         uses: ilammy/msvc-dev-cmd@v1.13.0
         with:
@@ -35,10 +41,10 @@ jobs:
         shell: cmd
         run: |
               set PATH=%PATH%;%programfiles%\7-Zip\;%programfiles%\nasm
-              perl Configure VC-WIN64A
+              perl Configure VC-WIN64A --prefix="%userprofile%\OpenSSL"
               nmake
               nmake test
-              nmake install --prefix="%userprofile%\OpenSSL"
+              nmake install
       # 7z a -tzip -mx9 -o"%userprofile%" "openssl-amd64.zip" "%programfiles%\OpenSSL\"
       - name: Upload OpenSSL
         uses: actions/upload-artifact@v4
@@ -47,6 +53,3 @@ jobs:
           path: ${{ steps.osslout.outputs.sslp }}
           compression-level: 9
           include-hidden-files: true
-          
-              
-    
