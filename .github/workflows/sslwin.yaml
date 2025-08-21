@@ -32,7 +32,6 @@ jobs:
               7z e -tzip -o"%programfiles%\nasm" "nasm.zip"
               curl -s -L -o "openssl.tar.gz" "${{ inputs.sslrel }}"
               7z x -so "openssl.tar.gz" | 7z x -ttar -si -o"%userprofile%"
-              cd "%userprofile%\openssl-${{ inputs.osslver }}"
       - name: Configure MSVC CMD for amd64
         uses: ilammy/msvc-dev-cmd@v1.13.0
         with:
@@ -40,6 +39,7 @@ jobs:
       - name: Build OpenSSL
         shell: cmd
         run: |
+              cd "%userprofile%\openssl-${{ inputs.osslver }}"
               set PATH=%PATH%;%programfiles%\7-Zip\;%programfiles%\nasm
               perl Configure VC-WIN64A --prefix="%userprofile%\OpenSSL"
               nmake
