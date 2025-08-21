@@ -14,10 +14,11 @@ jobs:
       - name: Output OpenSSL path
         id: osslout
         shell: cmd
-        run: echo sslp="C:\openssl\">>"%GITHUB_OUTPUT%"
+        run: echo sslp="%userprofile%\OpenSSL">>"%GITHUB_OUTPUT%"
       - name: Install Deps
         shell: cmd
         run: |
+              md "%userprofile%\OpenSSL"
               set PATH=%PATH%;%programfiles%\7-Zip\
               curl -o "nasm.zip" "https://www.nasm.us/pub/nasm/releasebuilds/2.16.03/win64/nasm-2.16.03-win64.zip"
               7z e -tzip -o"%programfiles%\nasm" "nasm.zip"
@@ -37,7 +38,7 @@ jobs:
               perl Configure VC-WIN64A
               nmake
               nmake test
-              nmake install
+              nmake install --prefix="%userprofile%\OpenSSL"
       # 7z a -tzip -mx9 -o"%userprofile%" "openssl-amd64.zip" "%programfiles%\OpenSSL\"
       - name: Upload OpenSSL
         uses: actions/upload-artifact@v4
