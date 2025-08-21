@@ -19,10 +19,10 @@ jobs:
   build:
     runs-on: windows-latest
     steps:
-      - name: Output OpenSSL path
+      - name: Output User Profile path
         id: osslout
         shell: cmd
-        run: echo sslp="%userprofile%\OpenSSL">>"%GITHUB_OUTPUT%"
+        run: echo uslp="%userprofile%">>"%GITHUB_OUTPUT%"
       - name: Install Deps
         shell: cmd
         run: |
@@ -38,8 +38,8 @@ jobs:
           arch: amd64
       - name: Build OpenSSL
         shell: cmd
+        working-directory: ${{ steps.osslout.outputs.uslp }}\openssl-${{ inputs.osslver }}
         run: |
-              cd "%userprofile%\openssl-${{ inputs.osslver }}"
               set PATH=%PATH%;%programfiles%\7-Zip\;%programfiles%\nasm
               perl Configure VC-WIN64A --prefix="%userprofile%\OpenSSL"
               nmake
@@ -50,6 +50,6 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: opensslforwin
-          path: ${{ steps.osslout.outputs.sslp }}
+          path: ${{ steps.osslout.outputs.uslp }}\OpenSSL
           compression-level: 9
           include-hidden-files: true
