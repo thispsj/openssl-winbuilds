@@ -2,18 +2,14 @@ name: Build OpenSSL for Windows
 on:
   workflow_dispatch:
     inputs:
-      sslrel:
-        description: "OpenSSL version to build (Tarball Link)"
+      sslref:
+        description: "OpenSSL version to build (Version Number)"
         required: true
-        default: 'https://github.com/openssl/openssl/releases/download/openssl-3.5.2/openssl-3.5.2.tar.gz'
+        default: '3.5.2' #LTS Version is default always and will be updated.
       nasmurl:
-        description: "NASM zip link"
+        description: "NASM Zip link"
         required: true
         default: 'https://nasm.us/pub/nasm/releasebuilds/2.16.03/win64/nasm-2.16.03-win64.zip'
-      osslver:
-        description: "OpenSSL Version (Should be the same as the one specified in link else build will fail!)"
-        required: true
-        default: '3.5.2'
 
 jobs:
   build:
@@ -26,12 +22,16 @@ jobs:
       - name: Install Deps
         shell: cmd
         run: |
-              md "%userprofile%\OpenSSL"
               set PATH=%PATH%;%programfiles%\7-Zip\
               curl -s -L -o "nasm.zip" "${{ inputs.nasmurl }}"
               7z e -tzip -o"%programfiles%\nasm" "nasm.zip"
-              curl -s -L -o "openssl.tar.gz" "${{ inputs.sslrel }}"
-              7z x -so "openssl.tar.gz" | 7z x -ttar -si -o".\"
+        # curl -s -L -o "openssl.tar.gz" "${{ inputs.sslrel }}"
+        # 7z x -so "openssl.tar.gz" | 7z x -ttar -si -o".\"
+      - name: Clone OpenSSL
+        uses: actions/checkout@v4
+        with:
+          repository: openssl/openssl
+          ref: ${{ inputs.sslref }}
       - name: Configure MSVC CMD for amd64
         uses: ilammy/msvc-dev-cmd@v1.13.0
         with:
@@ -39,17 +39,23 @@ jobs:
       - name: Build OpenSSL
         shell: cmd
         run: |
-              cd "openssl-${{ inputs.osslver }}"
               set PATH=%PATH%;%programfiles%\7-Zip\;%programfiles%\nasm
               perl Configure VC-WIN64A --prefix="${{ steps.osslout.outputs.uslp }}\OpenSSL"
               nmake
               nmake test
               nmake install
       # 7z a -tzip -mx9 -o"%userprofile%" "openssl-amd64.zip" "%programfiles%\OpenSSL\"
-      - name: Upload OpenSSL
+      - name: Upload OpenSSL Binaries
         uses: actions/upload-artifact@v4
         with:
-          name: opensslforwin
+          name: opensslwin-bin
+          path: '${{ steps.osslout.outputs.uslp }}\OpenSSL\bin'
+          compression-level: 9
+          include-hidden-files: true
+      - name: Upload OpenSSL All Files
+        uses: actions/upload-artifact@v4
+        with:
+          name: opensslwin
           path: '${{ steps.osslout.outputs.uslp }}\OpenSSL'
           compression-level: 9
           include-hidden-files: true
