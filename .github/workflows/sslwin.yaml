@@ -18,7 +18,7 @@ jobs:
       - name: Output User Profile path
         id: osslout
         shell: cmd
-        run: echo uslp=%programfiles%>>"%GITHUB_OUTPUT%"
+        run: echo uslp=%programfiles%\OpenSSL>>"%GITHUB_OUTPUT%"
       - name: Install Deps
         shell: cmd
         run: |
@@ -40,7 +40,7 @@ jobs:
         shell: cmd
         run: |
               set PATH=%PATH%;%programfiles%\7-Zip\;%programfiles%\nasm
-              perl Configure VC-WIN64A-HYBRIDCRT --prefix='${{ steps.osslout.outputs.uslp }}\OpenSSL' --release no-makedepend
+              perl Configure VC-WIN64A-HYBRIDCRT --prefix=${{ steps.osslout.outputs.uslp }} --release no-makedepend
               nmake
               nmake test
               nmake install
@@ -49,13 +49,13 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: opensslwin-bin
-          path: '${{ steps.osslout.outputs.uslp }}\OpenSSL'
+          path: '${{ steps.osslout.outputs.uslp }}'
           compression-level: 9
           include-hidden-files: true
       - name: Upload OpenSSL Binaries
         uses: actions/upload-artifact@v4
         with:
           name: opensslwin
-          path: '${{ steps.osslout.outputs.uslp }}\OpenSSL\bin'
+          path: '${{ steps.osslout.outputs.uslp }}\bin'
           compression-level: 9
           include-hidden-files: true
