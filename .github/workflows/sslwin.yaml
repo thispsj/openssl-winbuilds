@@ -40,7 +40,7 @@ jobs:
         shell: cmd
         run: |
               set PATH=%PATH%;%programfiles%\7-Zip\;%programfiles%\nasm
-              perl Configure VC-WIN64A --prefix="${{ steps.osslout.outputs.uslp }}\OpenSSL"
+              perl Configure VC-WIN64A no-makedepend --prefix="${{ steps.osslout.outputs.uslp }}\OpenSSL"
               nmake
               nmake test
               nmake install
@@ -49,13 +49,18 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: opensslwin-bin
-          path: '${{ steps.osslout.outputs.uslp }}\OpenSSL\bin'
+          path: |
+                '${{ steps.osslout.outputs.uslp }}\OpenSSL\bin'
+                '${{ steps.osslout.outputs.uslp }}\Common Files\SSL\'
+                !'${{ steps.osslout.outputs.uslp }}\OpenSSL\bin\*.pdb'
           compression-level: 9
           include-hidden-files: true
       - name: Upload OpenSSL All Files
         uses: actions/upload-artifact@v4
         with:
           name: opensslwin
-          path: '${{ steps.osslout.outputs.uslp }}\OpenSSL'
+          path: | 
+                '${{ steps.osslout.outputs.uslp }}\OpenSSL'
+                '${{ steps.osslout.outputs.uslp }}\Common Files\SSL\'
           compression-level: 9
           include-hidden-files: true
