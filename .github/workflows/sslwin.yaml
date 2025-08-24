@@ -50,9 +50,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: opensslwin-all
-          path: | 
-                '${{ steps.osslout.outputs.uslp }}'
-                'C:\Program Files\Common Files\SSL\'
+          path: '${{ steps.osslout.outputs.uslp }}'
           compression-level: 9
           include-hidden-files: true
       - name: Upload OpenSSL Binaries
@@ -60,5 +58,12 @@ jobs:
         with:
           name: opensslwin-bin
           path: '${{ steps.osslout.outputs.uslp }}\bin'
+          compression-level: 9
+          include-hidden-files: true
+      - name: Upload OpenSSL Common Files
+        uses: actions/upload-artifact@v4
+        with:
+          name: opensslwin-common
+          path: 'C:\Program Files\Common Files\SSL'
           compression-level: 9
           include-hidden-files: true
