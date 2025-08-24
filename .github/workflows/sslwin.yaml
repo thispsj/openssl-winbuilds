@@ -40,19 +40,21 @@ jobs:
         shell: cmd
         run: |
               set PATH=%PATH%;%programfiles%\7-Zip\;%programfiles%\nasm
-              perl Configure VC-WIN64A-HYBRIDCRT --release --prefix="${{ steps.osslout.outputs.uslp }}\OpenSSL" no-makedepend 
+              perl Configure VC-WIN64A-HYBRIDCRT --release^
+              --prefix="${{ steps.osslout.outputs.uslp }}\OpenSSL"^ 
+              no-makedepend 
               nmake
               nmake test
               nmake install
       # 7z a -tzip -mx9 -o"%userprofile%" "openssl-amd64.zip" "%programfiles%\OpenSSL\"
-      - name: Upload OpenSSL All Files Zip
+      - name: Upload OpenSSL All Files
         uses: actions/upload-artifact@v4
         with:
           name: opensslwin-bin
           path: '${{ steps.osslout.outputs.uslp }}\OpenSSL'
           compression-level: 9
           include-hidden-files: true
-      - name: Upload OpenSSL All Files
+      - name: Upload OpenSSL Binaries
         uses: actions/upload-artifact@v4
         with:
           name: opensslwin
