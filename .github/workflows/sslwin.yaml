@@ -40,7 +40,7 @@ jobs:
         shell: cmd
         run: |
               set PATH=%PATH%;%programfiles%\7-Zip\;%programfiles%\nasm
-              perl Configure VC-WIN64A-HYBRIDCRT --prefix="${{ steps.osslout.outputs.uslp }}" --release no-makedepend
+              perl Configure VC-WIN64A-HYBRIDCRT --prefix='${{ steps.osslout.outputs.uslp }}' --release no-makedepend
               nmake
               nmake test
               nmake install
