@@ -5,7 +5,7 @@ on:
       sslref:
         description: "OpenSSL version to build (Version Number)"
         required: true
-        default: 'openssl-3.5.2' #LTS Version is default always and will be updated.
+        default: 'openssl-3.5.4' #LTS Version is default always and will be updated.
       nasmurl:
         description: "NASM Zip link"
         required: true
