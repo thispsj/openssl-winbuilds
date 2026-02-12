@@ -19,7 +19,7 @@ jobs:
         id: ossl64
         run: |
               PATH=$ANDROID_NDK_ROOT/toolchains/llvm/prebuilt/linux-x86_64/bin:$PATH
-              ./Configure android-arm64 -D__ANDROID_API__=35
+              ./Configure android-arm64 -D__ANDROID_API__=35 --release no-makedepend
               make
               echo "uslp=$PWD" >> "$GITHUB_OUTPUT"
       # 7z a -tzip -mx9 -o"%userprofile%" "openssl-amd64.zip" "%programfiles%\OpenSSL\"
