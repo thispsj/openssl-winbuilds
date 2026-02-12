@@ -27,6 +27,6 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: openssldroid64
-          path: ${{ steps.osslout.outputs.uslp }}
+          path: '${{ steps.ossl64.outputs.uslp }}'
           compression-level: 9
           include-hidden-files: true
