@@ -1,0 +1,32 @@
+name: Build OpenSSL for Android (arm64 and arm)
+on:
+  workflow_dispatch:
+    inputs:
+      sslref:
+        description: "OpenSSL version to build (Version Number)"
+        required: true
+        default: 'openssl-3.5.4' #LTS Version is default always and will be updated.
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clone OpenSSL
+        uses: actions/checkout@v5
+        with:
+          repository: openssl/openssl
+          ref: ${{ inputs.sslref }}
+      - name: Build aarch64
+        id: ossl64
+        run: |
+              PATH=$ANDROID_NDK_ROOT/toolchains/llvm/prebuilt/linux-x86_64/bin:$ANDROID_NDK_ROOT/toolchains/arm-linux-androideabi-4.9/prebuilt/linux-x86_64/bin:$PATH
+              ./Configure android-arm64 -D__ANDROID_API__=36.1
+              make
+              echo "uslp=$PWD" >> "$GITHUB_OUTPUT"
+      # 7z a -tzip -mx9 -o"%userprofile%" "openssl-amd64.zip" "%programfiles%\OpenSSL\"
+      - name: Upload OpenSSL library for aarch64
+        uses: actions/upload-artifact@v4
+        with:
+          name: openssldroid64
+          path: '${{ steps.osslout.outputs.uslp }}'
+          compression-level: 9
+          include-hidden-files: true
