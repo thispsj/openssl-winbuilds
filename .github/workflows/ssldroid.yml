@@ -10,6 +10,11 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
+      - name: Make Output Directory
+        id: osslodir
+        run: |
+              mkdir sslout
+              echo "uslp=$PWD/sslout" >> "$GITHUB_OUTPUT"
       - name: Clone OpenSSL
         uses: actions/checkout@v5
         with:
@@ -19,14 +24,13 @@ jobs:
         id: ossl64
         run: |
               PATH=$ANDROID_NDK_ROOT/toolchains/llvm/prebuilt/linux-x86_64/bin:$PATH
-              ./Configure android-arm64 -D__ANDROID_API__=35 --release no-makedepend
+              ./Configure android-arm64 -D__ANDROID_API__=35 --prefix=${{ steps.osslodir.outputs.uslp }} --release no-makedepend
               make
-              echo "uslp=/usr/local/lib" >> "$GITHUB_OUTPUT"
       # 7z a -tzip -mx9 -o"%userprofile%" "openssl-amd64.zip" "%programfiles%\OpenSSL\"
       - name: Upload OpenSSL library for aarch64
         uses: actions/upload-artifact@v4
         with:
           name: openssldroid64
-          path: '${{ steps.ossl64.outputs.uslp }}'
+          path: '${{ steps.osslodir.outputs.uslp }}'
           compression-level: 9
           include-hidden-files: true
