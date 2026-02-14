@@ -24,7 +24,7 @@ jobs:
         id: ossl64
         run: |
               PATH=$ANDROID_NDK_ROOT/toolchains/llvm/prebuilt/linux-x86_64/bin:$PATH
-              ./Configure android-arm64 -D__ANDROID_API__=35 -DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES=ON --prefix=${{ steps.osslodir.outputs.uslp }} --release no-makedepend
+              ./Configure android-arm64 -D__ANDROID_API__=35 -DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES=ON -Wl,-z,max-page-size=16384 --prefix=${{ steps.osslodir.outputs.uslp }} --release no-makedepend
               make
               make install
       # 7z a -tzip -mx9 -o"%userprofile%" "openssl-amd64.zip" "%programfiles%\OpenSSL\"
