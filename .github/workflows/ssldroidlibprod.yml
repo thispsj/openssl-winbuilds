@@ -35,8 +35,8 @@ jobs:
           path: '${{ steps.osslodir.outputs.uslp }}'
           compression-level: 9
           include-hidden-files: true
-      - name: Build aarch64
-        id: ossl64
+      - name: Build armeabi_v7a
+        id: ossl
         run: |
               rm -fr $PWD/sslout
               PATH=$ANDROID_NDK_ROOT/toolchains/llvm/prebuilt/linux-x86_64/bin:$PATH
