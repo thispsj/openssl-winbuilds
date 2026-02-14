@@ -1,0 +1,53 @@
+name: Build OpenSSL Libraries for use in Android app development (arm64 and arm)
+on:
+  workflow_dispatch:
+    inputs:
+      sslref:
+        description: "OpenSSL version to build (Version Number)"
+        required: true
+        default: 'openssl-3.5.4' #LTS Version is default always and will be updated.
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Make Output Directory
+        id: osslodir
+        run: |
+              mkdir sslout
+              echo "uslp=$PWD/sslout" >> "$GITHUB_OUTPUT"
+      - name: Clone OpenSSL
+        uses: actions/checkout@v5
+        with:
+          repository: openssl/openssl
+          ref: ${{ inputs.sslref }}
+      - name: Build aarch64
+        id: ossl64
+        run: |
+              PATH=$ANDROID_NDK_ROOT/toolchains/llvm/prebuilt/linux-x86_64/bin:$PATH
+              ./Configure android-arm64 -D__ANDROID_API__=35 -DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES=ON -Wl,-z,max-page-size=16384 -s -O3 --prefix=${{ steps.osslodir.outputs.uslp }} --release no-makedepend no-tests no-unit-test no-ui-console no-apps no-hw no-engine
+              make
+              make install
+      # Both shared and static libraries are built but it is recommended to use static library if your app does not call OpenSSL functions directly and only a part of your native code/dependency uses it. 
+      - name: Upload OpenSSL library for aarch64
+        uses: actions/upload-artifact@v4
+        with:
+          name: openssldroid64
+          path: '${{ steps.osslodir.outputs.uslp }}'
+          compression-level: 9
+          include-hidden-files: true
+      - name: Build aarch64
+        id: ossl64
+        run: |
+              rm -fr $PWD/sslout
+              PATH=$ANDROID_NDK_ROOT/toolchains/llvm/prebuilt/linux-x86_64/bin:$PATH
+              ./Configure android-arm -D__ANDROID_API__=35 -s -O3 --prefix=${{ steps.osslodir.outputs.uslp }} --release no-makedepend no-tests no-unit-test no-ui-console no-apps no-hw no-engine
+              make
+              make install
+      # Both shared and static libraries are built but it is recommended to use static library if your app does not call OpenSSL functions directly and only a part of your native code/dependency uses it. 
+      - name: Upload OpenSSL library for aarch64
+        uses: actions/upload-artifact@v4
+        with:
+          name: openssldroid32
+          path: '${{ steps.osslodir.outputs.uslp }}'
+          compression-level: 9
+          include-hidden-files: true
