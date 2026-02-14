@@ -52,11 +52,11 @@ jobs:
         id: ossl
         run: |
               PATH=$ANDROID_NDK_ROOT/toolchains/llvm/prebuilt/linux-x86_64/bin:$PATH
-              ./Configure android-arm64 -D__ANDROID_API__=35 -s -O3 --prefix=${{ steps.osslodir.outputs.uslp }} --release no-makedepend no-tests no-unit-test no-ui-console no-apps no-engine
+              ./Configure android-arm -D__ANDROID_API__=35 -s -O3 --prefix=${{ steps.osslodir.outputs.uslp }} --release no-makedepend no-tests no-unit-test no-ui-console no-apps no-engine
               make
               make install
       # Both shared and static libraries are built but it is recommended to use static library if your app does not call OpenSSL functions directly and only a part of your native code/dependency uses it. 
-      - name: Upload OpenSSL library for aarch64
+      - name: Upload OpenSSL library for armeabi_v7a
         uses: actions/upload-artifact@v4
         with:
           name: openssldroid32
